@@ -25,7 +25,16 @@ SECRET_KEY = 'django-insecure-op!&p)nx!47ig8_tg*e1o4az3j%*_k*%5we#4r@q%htgpfohqw
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS =['*']
+CORS_ORIGIN_ALLOW_ALL = True
+
+
+# ALLOWED_HOSTS = ['http://localhost:5000']
+#
+# CORS_ORIGIN_ALLOW_ALL = False
+# CORS_ORIGIN_WHITELIST = (
+#     'http://localhost:5000',
+# )
 
 
 # Application definition
@@ -41,6 +50,7 @@ INSTALLED_APPS = [
     "chat.apps.ChatConfig",
     "phonenumber_field",
     'rest_framework',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -51,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'chat_app.urls'
@@ -128,7 +139,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+# STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = "media/"
@@ -140,3 +152,6 @@ PHONENUMBER_DB_FORMAT = 'INTERNATIONAL'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+

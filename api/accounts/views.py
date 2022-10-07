@@ -21,6 +21,9 @@ class UserListCreateView(ListCreateAPIView):
     queryset = User.active_objects.all()
     serializer_class = UserSerializer
 
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
 
 user_list_view = UserListCreateView.as_view()
 user_create_view = UserListCreateView.as_view()

@@ -44,6 +44,7 @@ def sign_up(request):
             user.username = user.username.title()
             user.email = user.email.lower()
             user.save()
+            print(user.password)
 
             messages.info(request, "You need to log in !")
             return HttpResponseRedirect(reverse("accounts:sign_in"))
