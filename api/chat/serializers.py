@@ -1,4 +1,6 @@
+from django.core.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField
+from django.db.models import Q
 
 from chat.models import Conversation, Messages
 from accounts.models import User
@@ -20,24 +22,28 @@ class ConversationMessagesSerializer(ModelSerializer):
 
 
 class ConversationSerializer(ModelSerializer):
-    starter = ConversationUserSerializer()
-    second_party = ConversationUserSerializer()
+    # starter = ConversationUserSerializer()
+    # second_party = ConversationUserSerializer()
     all_active_messages = ConversationMessagesSerializer(read_only=True, many=True)
     url = HyperlinkedIdentityField(view_name="chat_api:conversation_detail", lookup_field="pk", read_only=True)
 
     class Meta:
         model = Conversation
-        fields = ("starter", "second_party", "date_created", "all_active_messages", 'url')
+        fields = ('id', "starter", "second_party", "date_created", "all_active_messages", 'url')
 
 
 class ConversationDetailSerializer(ModelSerializer):
-    starter = ConversationUserSerializer()
-    second_party = ConversationUserSerializer()
+    # starter = ConversationUserSerializer()
+    # second_party = ConversationUserSerializer()
     all_active_messages = ConversationMessagesSerializer(read_only=True, many=True)
 
     class Meta:
         model = Conversation
-        fields = ("starter", "second_party", "date_created", "all_active_messages",)
+        fields = ('id', "starter", "second_party", "date_created", "all_active_messages",)
+        extra_kwargs = {
+            "starter": {"read_only": True},
+            "second_party": {"read_only": True},
+        }
 
 
 class MessagesSerializer(ModelSerializer):
@@ -45,10 +51,14 @@ class MessagesSerializer(ModelSerializer):
 
     class Meta:
         model = Messages
-        fields = ("conversation", "text", "date_sent", 'is_read', "url")
+        fields = ("conversation", 'sender', 'receiver', "text", "date_sent", 'is_read', "url")
 
 
 class MessagesDetailSerializer(ModelSerializer):
     class Meta:
         model = Messages
-        fields = ("conversation", "text", "date_sent", 'is_read', )
+        fields = ("conversation", 'sender', 'receiver', "text", "date_sent", 'is_read',)
+        extra_kwargs = {
+            'sender': {"read_only": True},
+            "receiver": {"read_only": True}
+        }

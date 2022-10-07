@@ -1,7 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, UserManager
 from phonenumber_field.modelfields import PhoneNumberField
+from django.db.models import Q
 
+
+from chat.models import Conversation
 
 # Create your models here.
 
@@ -49,3 +52,7 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
+    @property
+    def user_conversations(self):
+        return Conversation.active_objects.filter(Q(starter_id=self.id) | Q(second_party_id=self.id))

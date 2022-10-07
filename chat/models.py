@@ -1,9 +1,12 @@
 from django.db import models
 
-from accounts.models import User
-
+# from accounts.models import User
+from django.conf import settings
 
 # Create your models here.
+
+User = settings.AUTH_USER_MODEL
+
 
 class ActiveManager(models.Manager):
 
