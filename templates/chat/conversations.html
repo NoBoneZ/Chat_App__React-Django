@@ -1,0 +1,95 @@
+{% extends 'base_generic.html' %}
+
+
+{% block content %}
+<style>
+    .conversations--page{
+        display:grid;
+        grid-template-columns:1fr 3fr;
+    }
+
+</style>
+
+
+
+<div class="conversations--page">
+
+    {% include 'conversation_component.html' %}
+
+    <div class="conversations">
+        <h3>Chat with {{second_party}}</h3>
+        <ul>
+        {% for chat_message in chat_messages %}
+            {% if chat_message.text and not chat_message.images or not chat_messages.files %}
+                {% if chat_message.sender_id == request.user.id %}
+                <li class="sender--text">{{chat_message.text}}</li>
+                {% else %}
+                <li class="receiver--text">{{chat_message.text}}</li>
+                {% endif %}
+            {% elif chat_message.text and chat_message.images %}
+                 {% if chat_message.sender_id == request.user.id %}
+                <li class="sender--text">{{chat_message.text}}</li>
+                <li class="sender--image"><a href="{{chat_message.images.url}}">View Image</a></li>
+                {% else %}
+                <li class="receiver--text">{{chat_message.text}}</li>
+                <li class="receiver--image">{{chat_message.images}}</li>
+                {% endif %}
+            {% elif chat_message.text and chat_message.files %}
+                 {% if chat_message.sender_id == request.user.id %}
+                <li class="sender--text">{{chat_message.text}}</li>
+                <li class="sender--files"><a href="{{chat_message.files.url}}">View File</a></li>
+                {% else %}
+                <li class="receiver--text">{{chat_message.text}}</li>
+                <li class="receiver--files"><a href="{{chat_message.files.url}}">View File</a></li>
+                {% endif %}
+            {% elif chat_message.images and not chat_message.files and not chat_message.text %}
+                 {% if chat_message.sender_id == request.user.id %}
+                <li class="sender--images"><a href="{{chat_message.images.url}}">View Image</a></li>
+                {% else %}
+                <li class="receiver--images"><a href="{{chat_message.images.url}}">View Image</a></li>
+                {% endif %}
+            {% elif chat_message.images and chat_message.files %}
+                 {% if chat_message.sender_id == request.user.id %}
+                <li class="sender--image">{{chat_message.image}}</li>
+                <li class="sender--files"><a href="{{chat_message.files.url}}">View File</a></li>
+                {% else %}
+                <li class="receiver--images">{{chat_message.images}}</li>
+                <li class="receiver--files"><a href="{{chat_message.files.url}}">View File</a></li>
+                {% endif %}
+            {% elif chat_message.files and not chat_message.images and not chat_message.text %}
+                 {% if chat_message.sender_id == request.user.id %}
+                <li class="sender--files"><a href="{{chat_message.files.url}}">View File</a></li>
+                {% else %}
+                <li class="receiver--files"><a href="{{chat_message.files.url}}">View File</a></li>
+                {% endif %}
+            {% endif %}
+        {% empty %}
+            <li>No Messages in this Conversations</li>
+        {% endfor %}
+        </ul>
+
+
+        <form action="" method="POST">
+            {% csrf_token %}
+
+            <label>Message</label>
+            <br>
+            <input type="text" name="text">
+            <br>
+            <br>
+            <label>Image</label>
+            <br>
+            <input type="file" name="images">
+            <br>
+            <br>
+            <label>File</label>
+            <br>
+            <input type="file" name="files">
+
+             <br>
+            <br>
+            <input type="submit" value="Send Message">
+        </form>
+    </div>
+</div>
+{% endblock %}

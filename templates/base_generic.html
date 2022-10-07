@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% block title %}<title>Title</title>{% endblock %}
+</head>
+<body>
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li {% if message.tags == 'error' %}
+        class="messages--error"
+        {% elif message.tags == 'success' %}
+        class="messages--success"
+        {% elif message.tags == 'info' %}
+        class="messages--info"
+
+        {% endif %}>
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Error: {% endif %}
+        {{ message }}
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+{% block content %}
+{% endblock %}
+
+
+{% block scripts %}
+{% endblock %}
+</body>
+</html>

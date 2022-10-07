@@ -1,0 +1,38 @@
+
+
+
+
+
+<div class="conversation--component">
+        <form>
+            <input type="text" name="search_for_user">
+
+        </form>
+
+        {% if not checker %}
+            <h3>{{request.user.username}} Conversations</h3>
+            <ul>
+            {% for buddy in chat_buddies %}
+                    {% if request.user.id == buddy.starter_id %}
+                    <a href="{% url 'chat:conversation_messages' buddy.id buddy.second_party.username %}"><li>{{buddy.second_party}}</li></a>
+                    {% else %}
+                    <a href="{% url 'chat:conversation_messages' buddy.id buddy.starter.username %}"><li>{{buddy.starter}}</li></a>
+                    {% endif %}
+                {% empty %}
+                <li>Start Chat</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+    {% if checker %}
+        <h3>Users({{users.count}})</h3>
+        <ul>
+            {% for user in users %}
+            <a href="{% url 'chat:start_conversation' user.id %}"><li>{{user}}</li></a>
+            {% empty %}
+            <li>I'm Empty !</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <a href="{% url 'accounts:sign_out' %}"><button type="submit">Sign Out</button> </a>
+</div>

@@ -1,0 +1,23 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+<style>
+    .homepage--container{
+        display: grid;
+        grid-template-columns:1fr 3fr;
+    }
+
+</style>
+
+
+
+
+<div class="homepage--container">
+
+   {% include 'conversation_component.html' %}
+
+    <div class="homepage">
+        <h3>Kindly select a contact to chat with</h3>
+    </div>
+</div>
+{% endblock %}
