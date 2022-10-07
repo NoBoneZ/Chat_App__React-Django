@@ -2,6 +2,8 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from django.contrib.auth.hashers import make_password
+from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
 from .serializers import UserSerializer, UserDetailSerializer
 from accounts.models import User
@@ -21,8 +23,13 @@ class UserListCreateView(ListCreateAPIView):
     queryset = User.active_objects.all()
     serializer_class = UserSerializer
 
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
+    # def post(self, request, *args, **kwargs):
+    #     serializer = UserSerializer(data=request.data)
+    #     if serializer.is_valid(raise_exception=True):
+    #         serializer.password = make_password(serializer.password)
+    #         serializer.save()
+    #         return Response(serializer.data, status=HTTP_200_OK)
+    #     return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
 user_list_view = UserListCreateView.as_view()
