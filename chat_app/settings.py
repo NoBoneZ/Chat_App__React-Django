@@ -25,8 +25,8 @@ SECRET_KEY = 'django-insecure-op!&p)nx!47ig8_tg*e1o4az3j%*_k*%5we#4r@q%htgpfohqw
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS =['*']
-CORS_ORIGIN_ALLOW_ALL = True
+ALLOWED_HOSTS = []
+# CORS_ORIGIN_ALLOW_ALL = True
 
 
 # ALLOWED_HOSTS = ['http://localhost:5000']
@@ -55,13 +55,14 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'chat_app.urls'
@@ -153,5 +154,12 @@ PHONENUMBER_DB_FORMAT = 'INTERNATIONAL'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
