@@ -24,7 +24,8 @@ class ConversationMessagesSerializer(ModelSerializer):
 class ConversationSerializer(ModelSerializer):
     # starter = ConversationUserSerializer()
     # second_party = ConversationUserSerializer()
-    all_active_messages = ConversationMessagesSerializer(read_only=True, many=True)
+    all_active_messages = HyperlinkedIdentityField(view_name="chat_api:conversation_messages", lookup_field='pk',
+                                                   read_only=True)
     url = HyperlinkedIdentityField(view_name="chat_api:conversation_detail", lookup_field="pk", read_only=True)
 
     class Meta:
@@ -35,7 +36,8 @@ class ConversationSerializer(ModelSerializer):
 class ConversationDetailSerializer(ModelSerializer):
     # starter = ConversationUserSerializer()
     # second_party = ConversationUserSerializer()
-    all_active_messages = ConversationMessagesSerializer(read_only=True, many=True)
+    all_active_messages = HyperlinkedIdentityField(view_name="chat_api:conversation_messages", lookup_field='pk',
+                                                   read_only=True)
 
     class Meta:
         model = Conversation

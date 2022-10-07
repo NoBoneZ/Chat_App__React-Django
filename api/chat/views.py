@@ -2,8 +2,9 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.views import APIView
 from rest_framework.reverse import reverse
 from rest_framework.response import Response
-from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_200_OK
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
+from django.db.models import Q
 
 from .serializers import (ConversationSerializer, ConversationDetailSerializer,
                           MessagesSerializer, MessagesDetailSerializer
@@ -62,6 +63,16 @@ conversation_update_view = ConversationDetailUpdateDeleteView.as_view()
 conversation_delete_view = ConversationDetailUpdateDeleteView.as_view()
 
 
+class UserConversationsListView(APIView):
+    def get(self, request, **kwargs):
+        queryset = Conversation.active_objects.filter(Q(starter_id=kwargs["pk"]) | Q(second_party_id=kwargs["pk"]))
+        serializer = ConversationSerializer(queryset, many=True, context={"request": request})
+        return Response(serializer.data, status=HTTP_200_OK)
+
+
+user_conversation_view = UserConversationsListView.as_view()
+
+
 class MessagesListCreateView(ListCreateAPIView):
     queryset = Messages.active_objects.all()
     serializer_class = MessagesSerializer
@@ -72,7 +83,8 @@ class MessagesListCreateView(ListCreateAPIView):
         conversation = Conversation.active_objects.get(id=int(request.data.get('conversation')))
         if sender == receiver:
             raise ValidationError("the sender and the receiver cannot be the same person")
-        elif (sender == conversation.starter or sender == conversation.second_party) and (receiver == conversation.starter or receiver == conversation.second_party):
+        elif (sender == conversation.starter or sender == conversation.second_party) and (
+                receiver == conversation.starter or receiver == conversation.second_party):
             serializer = self.get_serializer(data=request.data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
@@ -99,3 +111,13 @@ class MessageDetailUpdateView(RetrieveUpdateDestroyAPIView):
 message_detail_view = MessageDetailUpdateView.as_view()
 message_update_view = MessageDetailUpdateView.as_view()
 message_delete_view = MessageDetailUpdateView.as_view()
+
+
+class ConversationMessageListView(APIView):
+    def get(self, request, *args, **kwargs):
+        queryset = Messages.active_objects.filter(conversation_id=kwargs["pk"])
+        serializer = MessagesSerializer(queryset, many=True, context={"request": request})
+        return Response(serializer.data, status=HTTP_200_OK)
+
+
+conversation_messages_view = ConversationMessageListView.as_view()

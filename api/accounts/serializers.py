@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField, CharField
+from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField, CharField, SerializerMethodField
 from rest_framework.reverse import reverse
 from django.contrib.auth.hashers import make_password
 
@@ -7,19 +7,20 @@ from chat.models import Conversation
 from ..chat.serializers import ConversationSerializer, ConversationUserSerializer, ConversationMessagesSerializer
 
 
-class UserConversationSerializer(ModelSerializer):
-    starter = ConversationUserSerializer()
-    second_party = ConversationUserSerializer()
-    url = HyperlinkedIdentityField(view_name="chat_api:conversation_detail", lookup_field="pk", read_only=True)
-
-    class Meta:
-        model = Conversation
-        fields = ("starter", "second_party", "date_created", 'url')
+# class UserConversationSerializer(ModelSerializer):
+#     starter = ConversationUserSerializer()
+#     second_party = ConversationUserSerializer()
+#     url = HyperlinkedIdentityField(view_name="chat_api:conversation_detail", lookup_field="pk", read_only=True)
+#
+#     class Meta:
+#         model = Conversation
+#         fields = ("starter", "second_party", "date_created", 'url')
 
 
 class UserSerializer(ModelSerializer):
     url = HyperlinkedIdentityField(view_name="accounts_api:api_user_details", lookup_field="pk", read_only=True)
-    user_conversations = UserConversationSerializer(read_only=True, many=True)
+    user_conversations = HyperlinkedIdentityField(view_name="chat_api:user_conversation", lookup_field="pk",
+                                                  read_only=True)
 
     class Meta:
         model = User
