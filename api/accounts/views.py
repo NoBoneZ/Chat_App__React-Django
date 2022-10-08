@@ -60,14 +60,14 @@ class UserAuthenticateView(APIView):
 
         try:
             user = User.active_objects.get(username=username)
+            email = user.email
         except User.DoesNotExist:
             return Response(status=HTTP_400_BAD_REQUEST)
 
-        print(user)
-        user = authenticate(username=username, password=password)
+        user = authenticate(email=email, password=password)
 
         if user is not None:
-            serializer = UserSerializer(user)
+            serializer = UserSerializer(user, context={'request': request})
             return Response(serializer.data, status=HTTP_200_OK)
         return Response(status=HTTP_400_BAD_REQUEST)
 
