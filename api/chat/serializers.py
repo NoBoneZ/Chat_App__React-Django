@@ -29,7 +29,8 @@ class ConversationSerializer(ModelSerializer):
     class Meta:
         model = Conversation
         fields = (
-            'id', "starter", "second_party", "second_party_username", "date_created", "all_active_messages", 'url')
+            'id', "starter", "starter_username", "second_party", "second_party_username", "date_created",
+            "all_active_messages", 'url')
 
 
 class ConversationDetailSerializer(ModelSerializer):
@@ -38,7 +39,8 @@ class ConversationDetailSerializer(ModelSerializer):
 
     class Meta:
         model = Conversation
-        fields = ('id', "starter", "second_party","second_party_username", "date_created", "all_active_messages",)
+        fields = ('id', "starter", "starter_username", "second_party", "second_party_username", "date_created",
+                  "all_active_messages",)
         extra_kwargs = {
             "starter": {"read_only": True},
             "second_party": {"read_only": True},

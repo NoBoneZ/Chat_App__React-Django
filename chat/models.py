@@ -58,6 +58,10 @@ class Conversation(models.Model):
     def second_party_username(self):
         return self.second_party.username
 
+    @property
+    def starter_username(self):
+        return self.starter.username
+
     def __str__(self):
         return f"{self.starter.username} {self.id}"
 
