@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth import authenticate
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
 from .serializers import UserSerializer, UserDetailSerializer
@@ -51,3 +51,25 @@ class UserDetailsUpdateDelete(RetrieveUpdateDestroyAPIView):
 user_detail_view = UserDetailsUpdateDelete.as_view()
 user_update_view = UserDetailsUpdateDelete.as_view()
 user_delete_view = UserDetailsUpdateDelete.as_view()
+
+
+class UserAuthenticateView(APIView):
+    def post(self, request, *args, **kwargs):
+        username = request.data.get("username")
+        password = request.data.get("password")
+
+        try:
+            user = User.active_objects.get(username=username)
+        except User.DoesNotExist:
+            return Response(status=HTTP_400_BAD_REQUEST)
+
+        print(user)
+        user = authenticate(username=username, password=password)
+
+        if user is not None:
+            serializer = UserSerializer(user)
+            return Response(serializer.data, status=HTTP_200_OK)
+        return Response(status=HTTP_400_BAD_REQUEST)
+
+
+user_authenticate_view = UserAuthenticateView.as_view()

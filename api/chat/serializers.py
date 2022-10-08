@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField
+from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField, SerializerMethodField
 from django.db.models import Q
 
 from chat.models import Conversation, Messages
@@ -28,7 +28,8 @@ class ConversationSerializer(ModelSerializer):
 
     class Meta:
         model = Conversation
-        fields = ('id', "starter", "second_party", "date_created", "all_active_messages", 'url')
+        fields = (
+            'id', "starter", "second_party", "second_party_username", "date_created", "all_active_messages", 'url')
 
 
 class ConversationDetailSerializer(ModelSerializer):
@@ -37,7 +38,7 @@ class ConversationDetailSerializer(ModelSerializer):
 
     class Meta:
         model = Conversation
-        fields = ('id', "starter", "second_party", "date_created", "all_active_messages",)
+        fields = ('id', "starter", "second_party","second_party_username", "date_created", "all_active_messages",)
         extra_kwargs = {
             "starter": {"read_only": True},
             "second_party": {"read_only": True},
@@ -60,7 +61,6 @@ class MessagesDetailSerializer(ModelSerializer):
             'sender': {"read_only": True},
             "receiver": {"read_only": True}
         }
-
 
 # class UserConversationMessagesSerializer(ModelSerializer):
 #     url = HyperlinkedIdentityField(view_name="chat_api:message_detail", lookup_field="pk")

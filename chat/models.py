@@ -54,6 +54,13 @@ class Conversation(models.Model):
     def all_active_messages(self):
         return Messages.active_objects.filter(conversation_id=self.id).order_by("date_sent")
 
+    @property
+    def second_party_username(self):
+        return self.second_party.username
+
+    def __str__(self):
+        return f"{self.starter.username} {self.id}"
+
 
 class Messages(models.Model):
     conversation = models.ForeignKey(Conversation, on_delete=models.SET_NULL, null=True)
