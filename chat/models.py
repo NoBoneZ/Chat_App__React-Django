@@ -55,6 +55,10 @@ class Conversation(models.Model):
         return Messages.active_objects.filter(conversation_id=self.id).order_by("date_sent")
 
     @property
+    def last_message(self):
+        return Messages.active_objects.filter(conversation_id=self.id).order_by("date_sent").last().text
+
+    @property
     def second_party_username(self):
         return self.second_party.username
 
