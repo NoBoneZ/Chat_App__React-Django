@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from django.contrib.auth import authenticate
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from .serializers import UserSerializer, UserDetailSerializer
 from accounts.models import User
@@ -22,6 +23,7 @@ api_root_view = ApiRoot.as_view()
 class UserListCreateView(ListCreateAPIView):
     queryset = User.active_objects.all()
     serializer_class = UserSerializer
+    parser_classes = (MultiPartParser, FormParser)
 
     # def post(self, request, *args, **kwargs):
     #     serializer = UserSerializer(data=request.data)
