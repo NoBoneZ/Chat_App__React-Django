@@ -52,13 +52,17 @@ class MessagesSerializer(ModelSerializer):
 
     class Meta:
         model = Messages
-        fields = ('id',"conversation", 'sender', 'receiver', "text", "date_sent", 'is_read', "url")
+        fields = ('id', "conversation", 'sender', 'receiver', "text", "images", "files", "date_sent", "url")
+        extra_kwargs = {
+            "images": {"write_only": True},
+            "files": {"write_only": True}
+        }
 
 
 class MessagesDetailSerializer(ModelSerializer):
     class Meta:
         model = Messages
-        fields = ('id' "conversation", 'sender', 'receiver', "text", "date_sent", 'is_read',)
+        fields = ('id', "conversation", 'sender', 'receiver', "text", "images", "files", "date_sent", 'is_read',)
         extra_kwargs = {
             'sender': {"read_only": True},
             "receiver": {"read_only": True}

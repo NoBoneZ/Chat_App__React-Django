@@ -4,6 +4,7 @@ from rest_framework.reverse import reverse
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_200_OK
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
+from rest_framework.parsers import MultiPartParser, FormParser
 from django.db.models import Q
 
 from .serializers import (ConversationSerializer, ConversationDetailSerializer,
@@ -95,6 +96,7 @@ user_conversation_create_view = UserConversationsListCreateView.as_view()
 class MessagesListCreateView(ListCreateAPIView):
     queryset = Messages.active_objects.all()
     serializer_class = MessagesSerializer
+    parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request, *args, **kwargs):
         sender = int(request.data.get('sender'))
@@ -119,6 +121,7 @@ message_create_view = MessagesListCreateView.as_view()
 class MessageDetailUpdateView(RetrieveUpdateDestroyAPIView):
     queryset = Messages.active_objects.all()
     serializer_class = MessagesDetailSerializer
+    parser_classes = (MultiPartParser, FormParser)
 
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
