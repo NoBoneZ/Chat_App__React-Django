@@ -21,10 +21,22 @@ class ConversationMessagesSerializer(ModelSerializer):
         fields = ("sender", "receiver", "text", "date_sent")
 
 
+class ConversationLastMessagesSerializer(ModelSerializer):
+    class Meta:
+        model = Messages
+        fields = ("text", "images", "files")
+        # extra_kwargs = {
+        #     "images": {"read_only": True},
+        #     "files": {"read_only": True},
+        #     "text": {"read_only": True},
+        # }
+
+
 class ConversationSerializer(ModelSerializer):
     all_active_messages = HyperlinkedIdentityField(view_name="chat_api:conversation_messages", lookup_field='pk',
                                                    read_only=True)
     url = HyperlinkedIdentityField(view_name="chat_api:conversation_detail", lookup_field="pk", read_only=True)
+    last_message = ConversationLastMessagesSerializer(read_only=True)
 
     class Meta:
         model = Conversation

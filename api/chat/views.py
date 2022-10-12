@@ -8,7 +8,8 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from django.db.models import Q
 
 from .serializers import (ConversationSerializer, ConversationDetailSerializer,
-                          MessagesSerializer, MessagesDetailSerializer, ConversationMessagesListSerializer
+                          MessagesSerializer, MessagesDetailSerializer,
+                          ConversationMessagesListSerializer, ConversationLastMessagesSerializer
                           )
 from chat.models import Conversation, Messages
 from accounts.models import User
