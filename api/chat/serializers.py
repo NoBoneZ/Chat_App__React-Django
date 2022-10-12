@@ -47,6 +47,18 @@ class ConversationDetailSerializer(ModelSerializer):
         }
 
 
+class ConversationMessagesListSerializer(ModelSerializer):
+    url = HyperlinkedIdentityField(view_name="chat_api:message_detail", lookup_field="pk")
+
+    class Meta:
+        model = Messages
+        fields = ('id', "conversation", 'sender', 'receiver', "text", "images", "files", "date_sent", "url")
+        # extra_kwargs = {
+        #     "images": {"write_only": True},
+        #     "files": {"write_only": True}
+        # }
+
+
 class MessagesSerializer(ModelSerializer):
     url = HyperlinkedIdentityField(view_name="chat_api:message_detail", lookup_field="pk")
 

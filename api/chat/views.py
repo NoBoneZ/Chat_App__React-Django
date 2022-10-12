@@ -8,7 +8,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from django.db.models import Q
 
 from .serializers import (ConversationSerializer, ConversationDetailSerializer,
-                          MessagesSerializer, MessagesDetailSerializer,
+                          MessagesSerializer, MessagesDetailSerializer, ConversationMessagesListSerializer
                           )
 from chat.models import Conversation, Messages
 from accounts.models import User
@@ -137,7 +137,7 @@ message_delete_view = MessageDetailUpdateView.as_view()
 
 class ConversationMessageListView(ListCreateAPIView):
     queryset = Messages.active_objects.all()
-    serializer_class = MessagesSerializer
+    serializer_class = ConversationMessagesListSerializer
 
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset().filter(conversation_id=kwargs["pk"])
