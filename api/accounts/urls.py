@@ -3,7 +3,7 @@ from django.urls import path
 from .views import (user_list_view, user_create_view,
                     api_root_view, user_detail_view,
                     user_delete_view, user_update_view,
-                    user_authenticate_view
+                    user_authenticate_view, forgot_change_password_view, forgot_password_view, verify_code_view
                     )
 
 app_name = "accounts_api"
@@ -16,5 +16,11 @@ urlpatterns = [
     path("user/update/<int:pk>/", user_update_view, name="api_user_update"),
     path("user/delete/<int:pk>/", user_delete_view, name="api_user_delete"),
 
-    path("user_authenticate/", user_authenticate_view, name="user_authenticate")
+    path("user_authenticate/", user_authenticate_view, name="user_authenticate"),
+
+
+    path("forgot_password/", forgot_password_view, name="forgot_password"),
+    path("verify_code/", verify_code_view, name="verify_code"),
+    path("forgot_password_change_password/<str:uid>/", forgot_change_password_view, name="forgot_password")
+
 ]

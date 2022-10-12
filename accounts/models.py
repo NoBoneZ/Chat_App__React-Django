@@ -1,3 +1,4 @@
+from random import randint
 from django.db import models
 from django.contrib.auth.models import AbstractUser, UserManager
 from phonenumber_field.modelfields import PhoneNumberField
@@ -56,3 +57,16 @@ class User(AbstractUser):
     @property
     def user_conversations(self):
         return Conversation.active_objects.filter(Q(starter_id=self.id) | Q(second_party_id=self.id))
+
+
+class ResetUserPassword(models.Model):
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True)
+    token = models.IntegerField(unique=True)
+
+    # def save(self, *args, **kwargs):
+    #     self.token = randint(99, 99999)
+    #     if ResetUserPassword.objects.get(token=self.token).exists():
+    #         self.token = randint(99, 99999)
+    #         return super().save(*args, **kwargs)
+    #     return super().save(*args, **kwargs)
+

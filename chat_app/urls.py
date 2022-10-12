@@ -27,6 +27,7 @@ urlpatterns = [
     path("api/", include("api.urls")),
     path("api/accounts/", include("api.accounts.urls")),
     path("api/chat/", include("api.chat.urls")),
+    path("api_auth/", include("rest_framework.urls"))
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

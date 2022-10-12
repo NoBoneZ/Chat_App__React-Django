@@ -1,3 +1,6 @@
+from random import randint
+
+from django.contrib.auth.hashers import make_password
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
@@ -5,9 +8,12 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from django.contrib.auth import authenticate
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.parsers import MultiPartParser, FormParser
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 
 from .serializers import UserSerializer, UserDetailSerializer
-from accounts.models import User
+from accounts.models import User, ResetUserPassword
+from helper.email import new_send_mail_func
 
 
 class ApiRoot(APIView):
@@ -75,3 +81,71 @@ class UserAuthenticateView(APIView):
 
 
 user_authenticate_view = UserAuthenticateView.as_view()
+
+
+class ForgotPasswordAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+
+            email = request.data.get("email")
+
+            user = User.active_objects.get(email=email)
+            reset_password = ResetUserPassword.objects.create(user=user, token=randint(99, 99999))
+
+            context = {
+                "user": user,
+                "token": reset_password.token,
+            }
+
+            email_body = {
+                "subject": f"Password Reset Code for {user.username}",
+                "recipients": [email]
+            }
+
+            new_send_mail_func(email_body, context)
+            return Response(status=HTTP_200_OK)
+        except:
+            return Response(status=HTTP_400_BAD_REQUEST)
+
+
+forgot_password_view = ForgotPasswordAPIView.as_view()
+
+
+class VerifyCodeAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            token = request.data.get("token")
+            reset_password = ResetUserPassword.objects.get(token=token)
+            uid = urlsafe_base64_encode(force_bytes(reset_password.user_id))
+            reset_password.delete()
+            context = {
+                "uid": uid
+            }
+            print(uid)
+            return Response(context, status=HTTP_200_OK)
+        except:
+            return Response(status=HTTP_400_BAD_REQUEST)
+
+
+verify_code_view = VerifyCodeAPIView.as_view()
+
+
+class ForgotPasswordChangePasswordAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+
+            user_id = urlsafe_base64_decode(kwargs["uid"])
+            user = User.active_objects.get(id=user_id)
+
+            password1 = request.data.get("new_password")
+            password2 = request.data.get("confirm_password")
+
+            if password1 == password2:
+                user.password = make_password(password1)
+                user.save()
+                return Response(status=HTTP_200_OK)
+        except:
+            return Response(status=HTTP_400_BAD_REQUEST)
+
+
+forgot_change_password_view = ForgotPasswordChangePasswordAPIView.as_view()
