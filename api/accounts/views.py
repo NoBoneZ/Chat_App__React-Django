@@ -1,6 +1,7 @@
 from random import randint
 
 from django.contrib.auth.hashers import make_password
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
@@ -139,6 +140,9 @@ class ForgotPasswordChangePasswordAPIView(APIView):
 
             password1 = request.data.get("new_password")
             password2 = request.data.get("confirm_password")
+
+            if password1 == "":
+                raise ValidationError("Password field is required")
 
             if password1 == password2:
                 user.password = make_password(password1)
