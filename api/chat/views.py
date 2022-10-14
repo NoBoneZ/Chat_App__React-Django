@@ -1,3 +1,6 @@
+import datetime
+from datetime import timedelta
+
 from rest_framework.exceptions import ValidationError
 from rest_framework.views import APIView
 from rest_framework.reverse import reverse
@@ -12,6 +15,7 @@ from .serializers import (ConversationSerializer, ConversationDetailSerializer,
                           ConversationMessagesListSerializer, ConversationLastMessagesSerializer
                           )
 from chat.models import Conversation, Messages
+from .permissions import IsSender, IsStarterOrIsSecondParty
 from accounts.models import User
 
 
@@ -29,6 +33,7 @@ api_root_view = ApiRootView.as_view()
 class ConversationListCreateView(ListCreateAPIView):
     queryset = Conversation.active_objects.all()
     serializer_class = ConversationSerializer
+    # permission_classes = (PostOnly,)
 
     def post(self, request, *args, **kwargs):
         starter = request.data.get("starter")
@@ -53,6 +58,7 @@ conversation_create_view = ConversationListCreateView.as_view()
 class ConversationDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     queryset = Conversation.active_objects.all()
     serializer_class = ConversationDetailSerializer
+    permission_classes = (IsStarterOrIsSecondParty, )
 
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -122,10 +128,13 @@ message_create_view = MessagesListCreateView.as_view()
 class MessageDetailUpdateView(RetrieveUpdateDestroyAPIView):
     queryset = Messages.active_objects.all()
     serializer_class = MessagesDetailSerializer
+    permission_classes = (IsSender,)
     parser_classes = (MultiPartParser, FormParser)
 
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
+        if datetime.datetime.now() > (instance.date_sent + timedelta(hours=12)):
+            raise ValidationError("Message cannot be deleted anymore! ")
         instance.is_active = False
         instance.save()
         return super().delete(request, *args, **kwargs)

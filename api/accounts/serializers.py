@@ -1,5 +1,6 @@
 from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField, CharField, SerializerMethodField
 from rest_framework.reverse import reverse
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.hashers import make_password
 
 from accounts.models import User
@@ -49,3 +50,15 @@ class UserDetailSerializer(ModelSerializer):
         model = User
         fields = ("username", "email", "gender", "profile_picture",)
 
+
+class TokenSerializer(TokenObtainPairSerializer):
+
+    @classmethod
+    def get_token(cls, user):
+
+        token = super().get_token(user)
+        token["id"] = user.id
+        token["username"] = user.username
+        token["email"] = user.email
+        token["is_staff"] = user.is_staff
+        return token

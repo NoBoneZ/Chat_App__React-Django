@@ -1,7 +1,9 @@
+import datetime
+
 from django.db.models import Q
 
 from .models import Conversation
-from accounts.models import User
+from accounts.models import User, ResetUserPassword
 
 
 def get_chat_list(request):
@@ -20,4 +22,13 @@ def get_chat_list(request):
         context["accounts"] = User.active_objects.filter(Q(username__icontains=search))
         context["checker"] = False if search == "" else True
         return context
+    return context
+
+
+def delete_reset_password(request):
+    context = {}
+    resets = ResetUserPassword.objects.all()
+    for reset in resets:
+        if datetime.datetime.now() > (reset.date_created + datetime.timedelta(minutes=5)):
+            reset.delete()
     return context

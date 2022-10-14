@@ -11,10 +11,12 @@ from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.encoding import force_bytes
+from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .serializers import UserSerializer, UserDetailSerializer
+from .serializers import UserSerializer, UserDetailSerializer, TokenSerializer
 from accounts.models import User, ResetUserPassword
 from helper.email import new_send_mail_func
+from .permissions import IsOwner, IsStaff
 
 
 class ApiRoot(APIView):
@@ -31,14 +33,7 @@ class UserListCreateView(ListCreateAPIView):
     queryset = User.active_objects.all()
     serializer_class = UserSerializer
     parser_classes = (MultiPartParser, FormParser)
-
-    # def post(self, request, *args, **kwargs):
-    #     serializer = UserSerializer(data=request.data)
-    #     if serializer.is_valid(raise_exception=True):
-    #         serializer.password = make_password(serializer.password)
-    #         serializer.save()
-    #         return Response(serializer.data, status=HTTP_200_OK)
-    #     return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+    permission_classes = (IsStaff,)
 
 
 user_list_view = UserListCreateView.as_view()
@@ -49,6 +44,7 @@ class UserDetailsUpdateDelete(RetrieveUpdateDestroyAPIView):
     queryset = User.active_objects.all()
     serializer_class = UserDetailSerializer
     lookup_field = "pk"
+    permission_classes = (IsOwner,)
 
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -63,6 +59,8 @@ user_delete_view = UserDetailsUpdateDelete.as_view()
 
 
 class UserAuthenticateView(APIView):
+    permission_classes = (IsStaff,)
+
     def post(self, request, *args, **kwargs):
         username = request.data.get("username")
         password = request.data.get("password")
@@ -85,12 +83,17 @@ user_authenticate_view = UserAuthenticateView.as_view()
 
 
 class ForgotPasswordAPIView(APIView):
+    permission_classes = (IsStaff,)
+
     def post(self, request, *args, **kwargs):
         try:
 
             email = request.data.get("email")
 
             user = User.active_objects.get(email=email)
+            if ResetUserPassword.objects.filter(user_id=user.id).first():
+                raise ValidationError("Code already generated, New code cannot be generated")
+
             reset_password = ResetUserPassword.objects.create(user=user, token=randint(99, 99999))
 
             context = {
@@ -100,7 +103,7 @@ class ForgotPasswordAPIView(APIView):
 
             email_body = {
                 "subject": f"Password Reset Code for {user.username}",
-                "recipients": [email]
+                'recipients': email
             }
 
             new_send_mail_func(email_body, context)
@@ -113,6 +116,8 @@ forgot_password_view = ForgotPasswordAPIView.as_view()
 
 
 class VerifyCodeAPIView(APIView):
+    permission_classes = (IsStaff,)
+
     def post(self, request, *args, **kwargs):
         try:
             token = request.data.get("token")
@@ -132,6 +137,8 @@ verify_code_view = VerifyCodeAPIView.as_view()
 
 
 class ForgotPasswordChangePasswordAPIView(APIView):
+    permission_classes = (IsStaff,)
+
     def post(self, request, *args, **kwargs):
         try:
 
@@ -148,8 +155,17 @@ class ForgotPasswordChangePasswordAPIView(APIView):
                 user.password = make_password(password1)
                 user.save()
                 return Response(status=HTTP_200_OK)
+            return Response({"message": "Password's don't match !"}, status=HTTP_400_BAD_REQUEST)
         except:
             return Response(status=HTTP_400_BAD_REQUEST)
 
 
 forgot_change_password_view = ForgotPasswordChangePasswordAPIView.as_view()
+
+
+class TokenObtainApiView(TokenObtainPairView):
+    permission_classes = (IsStaff,)
+    serializer_class = TokenSerializer
+
+
+token_obtain_view = TokenObtainApiView.as_view()

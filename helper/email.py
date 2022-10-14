@@ -20,11 +20,13 @@ def new_send_mail_func(email_body: Dict[str, Any], context: Dict):
         email_from = settings.EMAIL_HOST_USER
         recipient_list = email_body['recipients']
 
+        print(context)
         send_mail(
             subject,
             message,
             email_from,
-            [recipient_list]
+            recipient_list,
+            fail_silently=False
         )
         print(message)
         print(context["token"])
