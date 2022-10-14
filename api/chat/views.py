@@ -133,8 +133,6 @@ class MessageDetailUpdateView(RetrieveUpdateDestroyAPIView):
 
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
-        if datetime.datetime.now() > (instance.date_sent + timedelta(hours=12)):
-            raise ValidationError("Message cannot be deleted anymore! ")
         instance.is_active = False
         instance.save()
         return super().delete(request, *args, **kwargs)

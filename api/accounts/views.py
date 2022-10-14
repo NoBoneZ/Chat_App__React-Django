@@ -1,4 +1,5 @@
 from random import randint
+import requests
 
 from django.contrib.auth.hashers import make_password
 from rest_framework.exceptions import ValidationError
@@ -74,8 +75,15 @@ class UserAuthenticateView(APIView):
         user = authenticate(email=email, password=password)
 
         if user is not None:
-            serializer = UserSerializer(user, context={'request': request})
-            return Response(serializer.data, status=HTTP_200_OK)
+            # serializer = UserSerializer(user, context={'request': request})
+            endpoint = "http://localhost:7890/api/accounts/token/"
+            response = requests.post(endpoint, json={"email": user.email, "password": password})
+            context = {
+                "refresh": response.json()["refresh"],
+                "access": response.json()["access"]
+            }
+            # return Response(serializer.data, status=HTTP_200_OK)
+            return Response(context, status=HTTP_200_OK)
         return Response(status=HTTP_400_BAD_REQUEST)
 
 
@@ -164,7 +172,7 @@ forgot_change_password_view = ForgotPasswordChangePasswordAPIView.as_view()
 
 
 class TokenObtainApiView(TokenObtainPairView):
-    permission_classes = (IsStaff,)
+    # permission_classes = (IsStaff,)
     serializer_class = TokenSerializer
 
 
