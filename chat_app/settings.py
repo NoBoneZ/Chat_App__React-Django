@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     'corsheaders',
     "rest_framework_simplejwt",
     'rest_framework_simplejwt.token_blacklist',
-    # "channels"
+    "channels"
 ]
 
 MIDDLEWARE = [
@@ -84,7 +84,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'chat.context_processors.get_chat_list',
-                # 'chat.context_processors.delete_reset_password',
+                'chat.context_processors.delete_reset_password',
             ],
         },
     },
@@ -214,4 +214,13 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+}
+
+ASGI_APPLICATION = "chat_app.asgi.application"
+
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": 'channels.layers.InMemoryChannelLayer'
+    }
 }

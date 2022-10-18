@@ -1,11 +1,18 @@
 {% extends 'base_generic.html' %}
 
-
+{% load static %}
 {% block content %}
 <style>
     .conversations--page{
         display:grid;
         grid-template-columns:1fr 3fr;
+    }
+
+    #video_call_container{
+        height:100px;
+        width:100px;
+        border:1px solid red;
+
     }
 
 </style>
@@ -16,7 +23,7 @@
 
     {% include 'conversation_component.html' %}
 
-    <div class="conversations">
+    <div id="conversations">
         <h3>Chat with {{second_party}}</h3>
         <ul>
         {% for chat_message in chat_messages %}
@@ -69,7 +76,7 @@
         </ul>
 
 
-        <form action="" method="POST">
+        <form action="" method="POST" id="message">
             {% csrf_token %}
 
             <label>Message</label>
@@ -90,6 +97,49 @@
             <br>
             <input type="submit" value="Send Message">
         </form>
+
+<!--        <div id="video_call_container"></div>-->
     </div>
 </div>
+
+<!--<script type="text/javascript" src="{% static 'scripts/AgoraRTC_N-4.14.0.js' %}"></script>-->
+<!--<script type="text/javascript" src="{% static 'scripts/streams.js' %}"></script>-->
+<script type="text/javascript">
+
+    let url = `ws://${window.location.host}/ws/socket-server/`
+
+    const chatSocket = new WebSocket(url)
+
+    chatSocket.onmessage = function(e){
+        let data = JSON.parse(e.data)
+        console.log('Data:', data)
+
+        if(data.type == "chat"){
+            let messages = document.getElementById('conversations')
+
+            messages.insertAdjacentHTML('beforeend',
+
+            `<div>
+            <p>${data.message}</p>>
+            </div>`
+        )}
+
+    }
+
+    let form = document.getElementById('message')
+    form.addEventListener('submit', (e) => {
+        e.preventDefault()
+        let message = e.target.text.value
+        chatSocket.send(JSON.stringify({
+            'message': message
+
+        }))
+
+        form.reset()
+
+    })
+
+
+
+</script>
 {% endblock %}

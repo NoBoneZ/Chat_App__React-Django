@@ -29,6 +29,6 @@ def delete_reset_password(request):
     context = {}
     resets = ResetUserPassword.objects.all()
     for reset in resets:
-        if datetime.datetime.now() > (reset.date_created + datetime.timedelta(minutes=5)):
+        if datetime.datetime.now().isoformat() > (reset.date_created + datetime.timedelta(minutes=5)).isoformat():
             reset.delete()
     return context

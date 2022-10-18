@@ -23,13 +23,13 @@ class InactiveManager(models.Manager):
 class ReadManager(models.Manager):
 
     def get_queryset(self):
-        return super().get_queryset().filter(is_read=True)
+        return super().get_queryset().filter(is_read=True, is_active=True)
 
 
 class UnreadManager(models.Manager):
 
     def get_queryset(self):
-        return super().get_queryset().filter(is_read=False)
+        return super().get_queryset().filter(is_read=False, is_active=True)
 
 
 class ChatBox(models.Model):

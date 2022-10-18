@@ -10,6 +10,7 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.db.models import Q
 
+
 from .serializers import (ConversationSerializer, ConversationDetailSerializer,
                           MessagesSerializer, MessagesDetailSerializer,
                           ConversationMessagesListSerializer, ConversationLastMessagesSerializer
@@ -133,6 +134,8 @@ class MessageDetailUpdateView(RetrieveUpdateDestroyAPIView):
 
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
+        if datetime.datetime.now() > (instance.date_sent.isoformat() + datetime.timedelta(hours=12)):
+            raise ValidationError("Message has elapsed the 12 hour limit !")
         instance.is_active = False
         instance.save()
         return super().delete(request, *args, **kwargs)

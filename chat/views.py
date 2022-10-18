@@ -1,3 +1,5 @@
+import datetime
+
 from django.shortcuts import render, reverse
 from django.db.models import Q
 from django.contrib import messages
@@ -45,6 +47,9 @@ def conversation_messages(request, pk, username):
     for unread_message in unread_messages:
         unread_message.is_read = True
         unread_message.save()
+
+    # print(Messages.active_objects.all().first().date_sent.isoformat())
+    # print(datetime.datetime.now().isoformat())
 
     if request.method == "POST":
         form = MessagesForm(request.POST, request.FILES)
